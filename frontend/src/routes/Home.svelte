@@ -39,8 +39,11 @@
         <tr>
             <td>{total - ($page * size) - i}</td> 
             <td>
-                <a use:link href="/detail/{question.id}">{question.subject}</a> 
-            </td>
+                <a use:link href="/detail/{question.id}">{question.subject}</a>
+                {#if question.answers.length > 0}
+                    <span class="text-danger small mx-2">{question.answers.length}</span>
+                {/if}
+            </td> 
             <td>{moment(question.create_date).format("YYY년 MM일 DD일 hh:mm a")}</td>
         </tr>
         {/each} 
@@ -65,7 +68,7 @@
         {/each}
         <!-- 다음 페이지 -->
         <li class="page-item {$page >= total_page-1 && 'disabled'}">
-            <button class="page-link" on:click="{() => get_question_list(page+1)}">다음</button>
+            <button class="page-link" on:click="{() => get_question_list($page+1)}">다음</button>
         </li> 
     </ul>
     <!-- 페이징 처리끝 -->
