@@ -1,3 +1,5 @@
+import qs from "qs"
+
 const fastapi = (operation, url, params, success_callback, failure_callback) => {
     let method = operation
     // get, post, put, delete 
@@ -6,6 +8,13 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
     let body = JSON.stringify(params)
     // 자바스크립트 객체를 JSON 문자열로 변환
 
+    if(operation =='login'){
+
+        method = 'post'
+        content_type = 'application/x-www-form-urlencoded'
+        body = qs.stringify(params)
+    }
+    
     // let _url = 'http://127.0.0.1:8000'+url 
     let _url = import.meta.env.VITE_SERVER_URL+url
     // API 호출 주소는 호스트명 (예: http://127.0.0.1:8000)에 전달받은 url 값 (라우터)
