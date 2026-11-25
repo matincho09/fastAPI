@@ -1,5 +1,9 @@
 import qs from "qs"
 
+import { access_token,username, is_login } from "./store"
+import{get} from "svelte/store"
+import{push} from "svelte-spa-router"
+
 const fastapi = (operation, url, params, success_callback, failure_callback) => {
     let method = operation
     // get, post, put, delete 
@@ -8,13 +12,12 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
     let body = JSON.stringify(params)
     // 자바스크립트 객체를 JSON 문자열로 변환
 
-    if(operation =='login'){
-
+    if(operation === 'login') { 
         method = 'post'
-        content_type = 'application/x-www-form-urlencoded'
+        content_type = 'application/x-www-form-urlencoded' 
         body = qs.stringify(params)
     }
-    
+
     // let _url = 'http://127.0.0.1:8000'+url 
     let _url = import.meta.env.VITE_SERVER_URL+url
     // API 호출 주소는 호스트명 (예: http://127.0.0.1:8000)에 전달받은 url 값 (라우터)
@@ -27,6 +30,13 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
         headers: {
             "Content-Type": content_type 
         }
+    }
+
+    //스토어 변수의 값을 읽으려면 get 함수를 사용해야 하고
+    //아래 fetch API에서 처럼 값을 저장할깨는 access_token.set처럼 set 함수를 사용
+    const _access_token = get(access_token)
+    if(_access_token) {//access token에 값이 있을 경우에 HTTP 헤더에 Aytgorization 항목을 추가
+        options.headers["Authorization"] = "Bearer" + _access_token    
     }
 
     if (method !== 'get') { 
@@ -47,7 +57,14 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
                         if(success_callback) { 
                             success_callback(json)
                         } 
-                    } else {
+                        //알림 메시지를 보여주고 로그인 화면으로 이동 그리고 사용자 정보도 모두 초기화
+                    }else if(operation !== 'login' && response.status == 401){//token time out
+                        access_token.set('')
+                        username.set('')
+                        is_login.set(false)
+                        alert("로그인이 필요합니다.")
+                        push('/user-login')
+                    }else {
                         if (failure_callback) { 
                             failure_callback(json)
                         } else {

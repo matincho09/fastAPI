@@ -11,8 +11,8 @@
         '/': Home,
         '/detail/:question_id': Detail, 
         '/question-create': QuestionCreate,
-        '/user-create':UserCreate,
-        '/user-login':UserLogin,
+        '/user-create': UserCreate,
+        '/user-login': UserLogin,
     }
 </script>
 
